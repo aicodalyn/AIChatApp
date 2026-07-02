@@ -1,6 +1,7 @@
 package com.aichat.app.domain.usecase
 
 import com.aichat.app.domain.model.Conversation
+import com.aichat.app.domain.model.Message
 import com.aichat.app.domain.repository.ConversationRepository
 import com.aichat.app.domain.repository.MessageRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,8 @@ class ManageConversationsUseCase @Inject constructor(
     fun getAll(): Flow<List<Conversation>> = conversationRepository.getAll()
 
     fun getById(id: String): Flow<Conversation?> = conversationRepository.getById(id)
+
+    fun getMessages(conversationId: String): Flow<List<Message>> = messageRepository.getByConversationId(conversationId)
 
     fun search(query: String): Flow<List<Conversation>> = conversationRepository.search(query)
 

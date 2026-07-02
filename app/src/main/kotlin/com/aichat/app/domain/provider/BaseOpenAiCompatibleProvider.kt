@@ -10,6 +10,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -175,8 +176,7 @@ abstract class BaseOpenAiCompatibleProvider : AiProvider {
     override suspend fun getModels(apiKey: String, baseUrl: String): List<ModelInfo> {
         return try {
             val url = "${baseUrl.trimEnd('/')}/v1/models"
-            val response = httpClient.post(url) {
-                contentType(ContentType.Application.Json)
+            val response = httpClient.get(url) {
                 buildHeaders(apiKey).forEach { (k, v) -> header(k, v) }
             }
             if (response.status.isSuccess()) {
@@ -202,8 +202,7 @@ abstract class BaseOpenAiCompatibleProvider : AiProvider {
     override suspend fun validateConnection(apiKey: String, baseUrl: String): Boolean {
         return try {
             val url = "${baseUrl.trimEnd('/')}/v1/models"
-            val response = httpClient.post(url) {
-                contentType(ContentType.Application.Json)
+            val response = httpClient.get(url) {
                 buildHeaders(apiKey).forEach { (k, v) -> header(k, v) }
             }
             response.status.isSuccess()

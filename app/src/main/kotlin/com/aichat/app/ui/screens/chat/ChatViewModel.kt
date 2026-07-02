@@ -67,12 +67,19 @@ class ChatViewModel @Inject constructor(
             return
         }
 
+        _uiState.update { it.copy(conversationId = conversationId) }
+
         viewModelScope.launch {
             manageConversationsUseCase.getById(conversationId).collect { conversation ->
                 _uiState.update { it.copy(conversationTitle = conversation?.title) }
             }
         }
-        _uiState.update { it.copy(conversationId = conversationId) }
+
+        viewModelScope.launch {
+            manageConversationsUseCase.getMessages(conversationId).collect { messages ->
+                _uiState.update { it.copy(messages = messages) }
+            }
+        }
     }
 
     fun onInputChange(text: String) {
@@ -169,6 +176,12 @@ class ChatViewModel @Inject constructor(
                                     streamingText = "",
                                 )
                             }
+                            sendMessageUseCase.saveAssistantMessage(
+                                conversationId = conversationId,
+                                content = responseBuilder.toString(),
+                                providerName = profile.name,
+                                model = profile.model,
+                            )
                             manageConversationsUseCase.update(
                                 com.aichat.app.domain.model.Conversation(
                                     id = conversationId,

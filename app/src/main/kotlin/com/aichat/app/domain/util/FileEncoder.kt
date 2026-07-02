@@ -17,8 +17,7 @@ class FileEncoder @Inject constructor(
     fun encodeImageToBase64(uri: Uri, maxWidth: Int = 1024, quality: Int = 80): String? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            inputStream.close()
+            val bitmap = inputStream.use { BitmapFactory.decodeStream(it) } ?: return null
 
             val scaledBitmap = scaleBitmap(bitmap, maxWidth)
             val outputStream = ByteArrayOutputStream()

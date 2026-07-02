@@ -13,5 +13,4 @@ interface ConversationRepository {
     suspend fun delete(id: String)
     suspend fun togglePin(id: String)
     suspend fun rename(id: String, newTitle: String)
-    suspend fun getMessageCount(conversationId: String): Int
 }

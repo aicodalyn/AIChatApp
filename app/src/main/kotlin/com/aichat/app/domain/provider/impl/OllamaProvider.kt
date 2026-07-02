@@ -12,6 +12,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -67,7 +68,7 @@ class OllamaProvider : AiProvider {
         }
 
         val requestBody = JsonObject().apply {
-            add("model", JsonObject().apply { addProperty("asString", model) })
+            addProperty("model", model)
             add("messages", messagesArray)
             addProperty("stream", true)
         }
@@ -117,9 +118,7 @@ class OllamaProvider : AiProvider {
     override suspend fun getModels(apiKey: String, baseUrl: String): List<ModelInfo> {
         return try {
             val url = "${baseUrl.trimEnd('/')}/api/tags"
-            val response = httpClient.post(url) {
-                contentType(ContentType.Application.Json)
-            }
+            val response = httpClient.get(url)
             if (response.status.isSuccess()) {
                 val body = response.bodyAsText()
                 val json = JsonParser.parseString(body).asJsonObject
@@ -142,9 +141,7 @@ class OllamaProvider : AiProvider {
 
     override suspend fun validateConnection(apiKey: String, baseUrl: String): Boolean {
         return try {
-            val response = httpClient.post("${baseUrl.trimEnd('/')}/api/tags") {
-                contentType(ContentType.Application.Json)
-            }
+            val response = httpClient.get("${baseUrl.trimEnd('/')}/api/tags")
             response.status.isSuccess()
         } catch (_: Exception) {
             false

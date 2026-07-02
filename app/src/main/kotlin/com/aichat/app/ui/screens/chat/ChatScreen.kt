@@ -41,6 +41,7 @@ import com.aichat.app.ui.components.input.ChatInputBar
 import com.aichat.app.ui.components.input.FilePickerSheet
 import com.aichat.app.ui.components.provider.ProviderCarousel
 import com.aichat.app.domain.usecase.UploadFileUseCase
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +55,7 @@ fun ChatScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var showFilePicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val uploadFileUseCase = remember { UploadFileUseCase(context) }
+    val uploadFileUseCase = remember(context) { UploadFileUseCase(context) }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

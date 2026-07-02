@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.aichat.app.domain.model.Conversation
 import com.aichat.app.domain.usecase.ManageConversationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +26,7 @@ class ConversationsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ConversationsUiState())
     val uiState: StateFlow<ConversationsUiState> = _uiState.asStateFlow()
+    private var searchJob: Job? = null
 
     init {
         loadConversations()
@@ -42,7 +44,8 @@ class ConversationsViewModel @Inject constructor(
 
     fun onSearchQueryChange(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
-        viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             if (query.isBlank()) {
                 manageConversationsUseCase.getAll().collect { conversations ->
                     _uiState.update { it.copy(conversations = conversations) }

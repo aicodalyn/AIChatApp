@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,9 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.aichat.app.data.local.security.PinManager
 
 @Composable
 fun LockScreen(
+    pinManager: PinManager? = null,
     onUnlock: () -> Unit,
 ) {
     var pin by remember { mutableStateOf("") }
@@ -68,7 +72,15 @@ fun LockScreen(
         Button(
             onClick = {
                 if (pin.length >= 4) {
-                    onUnlock()
+                    if (pinManager != null) {
+                        if (pinManager.verifyPin(pin)) {
+                            onUnlock()
+                        } else {
+                            error = true
+                        }
+                    } else {
+                        onUnlock()
+                    }
                 } else {
                     error = true
                 }
@@ -78,9 +90,12 @@ fun LockScreen(
             Text("Unlock")
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Button(
+        TextButton(
             onClick = onUnlock,
             modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
         ) {
             Text("Skip (Dev Mode)")
         }

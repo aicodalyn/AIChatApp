@@ -59,8 +59,12 @@ object ProviderFactory {
 
     fun createWithClient(type: ProviderType, client: HttpClient): AiProvider {
         val provider = create(type)
-        if (provider is BaseOpenAiCompatibleProvider) {
-            provider.httpClient = client
+        when (provider) {
+            is BaseOpenAiCompatibleProvider -> provider.httpClient = client
+            is ClaudeProvider -> provider.httpClient = client
+            is GeminiProvider -> provider.httpClient = client
+            is CohereProvider -> provider.httpClient = client
+            is OllamaProvider -> provider.httpClient = client
         }
         return provider
     }

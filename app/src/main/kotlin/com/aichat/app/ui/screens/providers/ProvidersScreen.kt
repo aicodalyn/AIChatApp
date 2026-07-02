@@ -169,14 +169,19 @@ private fun AddProviderDialog(
                 OutlinedTextField(
                     value = baseUrl,
                     onValueChange = { baseUrl = it },
-                    label = { Text("Base URL") },
+                    label = { Text("Base URL (optional)") },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = model,
                     onValueChange = { model = it },
-                    label = { Text("Model") },
+                    label = { Text("Model (optional)") },
                     modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = "Provider Type: ${selectedType.displayName}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         },
@@ -184,7 +189,14 @@ private fun AddProviderDialog(
             androidx.compose.material3.TextButton(
                 onClick = {
                     if (name.isNotBlank() && apiKey.isNotBlank()) {
-                        onAdd(name, selectedType, apiKey, baseUrl.ifBlank { selectedType.displayName }, model.ifBlank { "default" })
+                        val defaultProvider = com.aichat.app.domain.provider.ProviderFactory.create(selectedType)
+                        onAdd(
+                            name,
+                            selectedType,
+                            apiKey,
+                            baseUrl.ifBlank { defaultProvider.defaultBaseUrl },
+                            model.ifBlank { defaultProvider.defaultModel },
+                        )
                     }
                 },
             ) {

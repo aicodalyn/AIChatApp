@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.aichat.app.data.local.security.PinManager
 import com.aichat.app.ui.screens.chat.ChatScreen
 import com.aichat.app.ui.screens.conversations.ConversationsScreen
 import com.aichat.app.ui.screens.lock.LockScreen
@@ -19,10 +20,11 @@ fun NavGraph(
     startDestination: String = Screen.Conversations.route,
     isLocked: Boolean = false,
     onUnlock: () -> Unit = {},
+    pinManager: PinManager? = null,
     modifier: Modifier = Modifier,
 ) {
     if (isLocked) {
-        LockScreen(onUnlock = onUnlock)
+        LockScreen(pinManager = pinManager, onUnlock = onUnlock)
         return
     }
 

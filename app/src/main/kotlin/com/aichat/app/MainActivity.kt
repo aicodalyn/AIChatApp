@@ -25,19 +25,25 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.aichat.app.data.local.security.PinManager
 import com.aichat.app.ui.navigation.NavGraph
 import com.aichat.app.ui.navigation.Screen
 import com.aichat.app.ui.theme.AiChatTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var pinManager: PinManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AiChatTheme {
-                MainApp()
+                MainApp(pinManager = pinManager)
             }
         }
     }
@@ -50,9 +56,9 @@ private data class BottomNavItem(
 )
 
 @Composable
-private fun MainApp() {
+private fun MainApp(pinManager: PinManager) {
     val navController = rememberNavController()
-    var isLocked by remember { mutableStateOf(true) }
+    var isLocked by remember { mutableStateOf(pinManager.hasPin()) }
 
     val bottomNavItems = listOf(
         BottomNavItem("Chats", Icons.Default.Chat, Screen.Conversations.route),
@@ -61,7 +67,7 @@ private fun MainApp() {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val showBottomBar = bottomNavItems.any { item ->
+    val showBottomBar = !isLocked && bottomNavItems.any { item ->
         currentDestination?.hierarchy?.any { it.route == item.route } == true
     }
 
@@ -94,6 +100,7 @@ private fun MainApp() {
             navController = navController,
             isLocked = isLocked,
             onUnlock = { isLocked = false },
+            pinManager = pinManager,
             modifier = Modifier.padding(innerPadding),
         )
     }

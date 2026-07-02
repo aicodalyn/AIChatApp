@@ -36,7 +36,4 @@ interface ConversationDao {
 
     @Query("UPDATE conversations SET title = :newTitle WHERE id = :id")
     suspend fun rename(id: String, newTitle: String)
-
-    @Query("SELECT COUNT(*) FROM messages WHERE conversationId = :conversationId")
-    suspend fun getMessageCount(conversationId: String): Int
 }

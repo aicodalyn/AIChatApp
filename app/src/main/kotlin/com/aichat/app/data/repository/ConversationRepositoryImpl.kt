@@ -49,7 +49,4 @@ class ConversationRepositoryImpl @Inject constructor(
     override suspend fun togglePin(id: String) = dao.togglePin(id)
 
     override suspend fun rename(id: String, newTitle: String) = dao.rename(id, newTitle)
-
-    override suspend fun getMessageCount(conversationId: String) =
-        dao.getMessageCount(conversationId)
 }
