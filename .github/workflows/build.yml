@@ -32,8 +32,14 @@ jobs:
       - name: Install SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Debug Environment
+        run: |
+          echo "GRADLE_OPTS=$GRADLE_OPTS"
+          echo "JAVA_OPTS=$JAVA_OPTS"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | head -30
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
